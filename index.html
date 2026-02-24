@@ -1,0 +1,296 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>颜色助记卡片</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: "Microsoft YaHei", Arial, sans-serif;
+        }
+        body {
+            background-color: #f0f2f5;
+            padding: 20px;
+        }
+        .card-container {
+            max-width: 500px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 16px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+            padding: 30px 25px;
+        }
+        .card-header {
+            text-align: center;
+            margin-bottom: 25px;
+            color: #2c3e50;
+        }
+        .card-header h1 {
+            font-size: 24px;
+            margin-bottom: 8px;
+        }
+        .card-header .progress {
+            font-size: 14px;
+            color: #7f8c8d;
+        }
+        .word-card {
+            text-align: center;
+            margin-bottom: 25px;
+        }
+        .word-card .english {
+            font-size: 32px;
+            font-weight: bold;
+            color: #3498db;
+            margin-bottom: 10px;
+        }
+        .word-card .meaning {
+            font-size: 18px;
+            color: #27ae60;
+            margin-top: 15px;
+            min-height: 24px;
+        }
+        .input-area {
+            margin-bottom: 20px;
+        }
+        .input-area input {
+            width: 100%;
+            padding: 12px 15px;
+            font-size: 16px;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            outline: none;
+            transition: border 0.3s;
+        }
+        .input-area input:focus {
+            border-color: #3498db;
+        }
+        .btn-area button {
+            width: 100%;
+            padding: 12px;
+            background-color: #3498db;
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-size: 16px;
+            cursor: pointer;
+            transition: background 0.3s;
+        }
+        .btn-area button:hover {
+            background-color: #2980b9;
+        }
+        .hint {
+            text-align: center;
+            font-size: 15px;
+            color: #f39c12;
+            margin: 10px 0;
+            min-height: 20px;
+        }
+        .result {
+            text-align: center;
+            font-size: 16px;
+            margin: 10px 0;
+            min-height: 20px;
+        }
+        .correct {
+            color: #27ae60;
+        }
+        .wrong {
+            color: #e74c3c;
+        }
+        .finish-card {
+            text-align: center;
+            padding: 20px 0;
+        }
+        .finish-card h2 {
+            color: #3498db;
+            margin-bottom: 15px;
+        }
+        .finish-card p {
+            font-size: 18px;
+            margin-bottom: 20px;
+        }
+    </style>
+</head>
+<body>
+    <div class="card-container" id="main-container">
+        <div class="card-header">
+            <h1>颜色助记卡片</h1>
+            <div class="progress" id="progress">第 1/49 个颜色</div>
+        </div>
+        <div class="word-card">
+            <div class="english" id="word-english"></div>
+            <div class="meaning" id="word-meaning"></div>
+        </div>
+        <div class="hint" id="hint-text"></div>
+        <div class="result" id="result-text"></div>
+        <div class="input-area">
+            <input type="text" id="answer-input" placeholder="请输入单词的中文释义">
+        </div>
+        <div class="btn-area">
+            <button onclick="checkAnswer()">提交答案</button>
+        </div>
+    </div>
+
+    <script>
+        // 替换后的颜色编码库（共49个）
+        const wordList = [
+            { en: "A1", cn: "黑色" },
+            { en: "A4", cn: "黑白花" },
+            { en: "A6", cn: "黑底花" },
+            { en: "B2", cn: "牛仔蓝" },
+            { en: "B4", cn: "王冠蓝" },
+            { en: "BC", cn: "道奇蓝" },
+            { en: "C1", cn: "白色" },
+            { en: "D1", cn: "咖啡色" },
+            { en: "D6", cn: "乌木棕" },
+            { en: "D8", cn: "咖色花" },
+            { en: "D9", cn: "松球色" },
+            { en: "DA", cn: "麦麸棕" },
+            { en: "DB", cn: "深橡木色" },
+            { en: "E3", cn: "雨雾灰" },
+            { en: "E4", cn: "熔岩灰" },
+            { en: "E5", cn: "黎明灰" },
+            { en: "E6", cn: "安静灰" },
+            { en: "F2", cn: "坚果壳棕" },
+            { en: "F5", cn: "吐司色" },
+            { en: "FA", cn: "榛子色" },
+            { en: "G0", cn: "清澈绿" },
+            { en: "G3", cn: "茶棕色" },
+            { en: "G7", cn: "豆蔻绿" },
+            { en: "G9", cn: "绿底花" },
+            { en: "GA", cn: "苔藓绿" },
+            { en: "GD", cn: "海松绿" },
+            { en: "GE", cn: "罗勒绿" },
+            { en: "GH", cn: "水雾绿" },
+            { en: "GK", cn: "果冻豆绿" },
+            { en: "H1", cn: "爱尔兰奶油" },
+            { en: "H2", cn: "开心果色" },
+            { en: "H6", cn: "云米色" },
+            { en: "I1", cn: "红色" },
+            { en: "I2", cn: "番茄红" },
+            { en: "I3", cn: "安可拉红" },
+            { en: "I7", cn: "火焰红" },
+            { en: "I8", cn: "梅洛红" },
+            { en: "I9", cn: "火炉红" },
+            { en: "IA", cn: "朗姆酒红" },
+            { en: "IB", cn: "无花果色" },
+            { en: "ID", cn: "暮光红" },
+            { en: "J1", cn: "黄色" },
+            { en: "J5", cn: "太阳能黄" },
+            { en: "K4", cn: "葡萄汁" },
+            { en: "LB", cn: "古金橙" },
+            { en: "N1", cn: "柔雾粉" },
+            { en: "N8", cn: "嫩桃色" },
+            { en: "NB", cn: "棱镜粉" },
+            { en: "Q7", cn: "棋盘格" },
+            { en: "Q8", cn: "条纹格" }
+        ];
+
+        // 初始化变量
+        let shuffledWords = [...wordList].sort(() => Math.random() - 0.5); // 随机打乱顺序
+        let currentIndex = 0; // 当前编码索引
+        let wrongAttempts = 0; // 错误尝试次数
+        let correctCount = 0; // 正确答题数
+
+        // 显示当前编码
+        function showCurrentWord() {
+            if (currentIndex >= shuffledWords.length) {
+                // 所有编码完成
+                showFinishPage();
+                return;
+            }
+            const currentWord = shuffledWords[currentIndex];
+            document.getElementById("word-english").textContent = currentWord.en;
+            document.getElementById("word-meaning").textContent = ""; // 清空释义
+            document.getElementById("hint-text").textContent = ""; // 清空提示
+            document.getElementById("result-text").textContent = ""; // 清空结果
+            document.getElementById("answer-input").value = ""; // 清空输入框
+            document.getElementById("progress").textContent = `第 ${currentIndex + 1}/${shuffledWords.length} 个颜色`;
+            wrongAttempts = 0; // 重置错误次数
+        }
+
+        // 检查答案
+        function checkAnswer() {
+            const inputAnswer = document.getElementById("answer-input").value.trim();
+            const currentWord = shuffledWords[currentIndex];
+            const resultText = document.getElementById("result-text");
+            const meaningText = document.getElementById("word-meaning");
+            const hintText = document.getElementById("hint-text");
+
+            // 空输入判断
+            if (!inputAnswer) {
+                resultText.textContent = "请输入对应的颜色名称！";
+                resultText.className = "result wrong";
+                return;
+            }
+
+            // 答案正确
+            if (inputAnswer === currentWord.cn) {
+                resultText.textContent = "✅ 回答正确！";
+                resultText.className = "result correct";
+                meaningText.textContent = `释义：${currentWord.cn}`;
+                correctCount++;
+                // 1.2秒后切换下一个编码
+                setTimeout(() => {
+                    currentIndex++;
+                    showCurrentWord();
+                }, 1200);
+            } else {
+                wrongAttempts++;
+                // 第一次答错，给出提示
+                if (wrongAttempts === 1) {
+                    resultText.textContent = "❌ 回答错误，再试一次！";
+                    resultText.className = "result wrong";
+                    // 提示：显示颜色名称的前1-2个字
+                    const hint = currentWord.cn.slice(0, 2) + "……";
+                    hintText.textContent = `💡 提示：${hint}`;
+                } else {
+                    // 第二次答错，显示正确答案并切换下一个
+                    resultText.textContent = "❌ 再次答错！";
+                    resultText.className = "result wrong";
+                    meaningText.textContent = `正确名称：${currentWord.cn}`;
+                    // 1.2秒后切换下一个编码
+                    setTimeout(() => {
+                        currentIndex++;
+                        showCurrentWord();
+                    }, 1200);
+                }
+            }
+        }
+
+        // 显示完成页面
+        function showFinishPage() {
+            const container = document.getElementById("main-container");
+            container.innerHTML = `
+                <div class="finish-card">
+                    <h2>🎉 编码背诵完成！</h2>
+                    <p>本次共背诵 ${shuffledWords.length} 个编码</p>
+                    <p>答对 ${correctCount} 个，答错 ${shuffledWords.length - correctCount} 个</p>
+                    <button onclick="restartGame()">重新开始</button>
+                </div>
+            `;
+        }
+
+        // 重新开始
+        function restartGame() {
+            shuffledWords = [...wordList].sort(() => Math.random() - 0.5);
+            currentIndex = 0;
+            correctCount = 0;
+            showCurrentWord();
+        }
+
+        // 绑定回车键提交
+        document.getElementById("answer-input").addEventListener("keydown", function(e) {
+            if (e.key === "Enter") {
+                checkAnswer();
+            }
+        });
+
+        // 初始化显示第一个编码
+        showCurrentWord();
+    </script>
+</body>
+</html>
