@@ -1,296 +1,484 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="zh-CN">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>颜色助记卡片</title>
-    <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-            font-family: "Microsoft YaHei", Arial, sans-serif;
-        }
-        body {
-            background-color: #f0f2f5;
-            padding: 20px;
-        }
-        .card-container {
-            max-width: 500px;
-            margin: 0 auto;
-            background: white;
-            border-radius: 16px;
-            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
-            padding: 30px 25px;
-        }
-        .card-header {
-            text-align: center;
-            margin-bottom: 25px;
-            color: #2c3e50;
-        }
-        .card-header h1 {
-            font-size: 24px;
-            margin-bottom: 8px;
-        }
-        .card-header .progress {
-            font-size: 14px;
-            color: #7f8c8d;
-        }
-        .word-card {
-            text-align: center;
-            margin-bottom: 25px;
-        }
-        .word-card .english {
-            font-size: 32px;
-            font-weight: bold;
-            color: #3498db;
-            margin-bottom: 10px;
-        }
-        .word-card .meaning {
-            font-size: 18px;
-            color: #27ae60;
-            margin-top: 15px;
-            min-height: 24px;
-        }
-        .input-area {
-            margin-bottom: 20px;
-        }
-        .input-area input {
-            width: 100%;
-            padding: 12px 15px;
-            font-size: 16px;
-            border: 1px solid #ddd;
-            border-radius: 8px;
-            outline: none;
-            transition: border 0.3s;
-        }
-        .input-area input:focus {
-            border-color: #3498db;
-        }
-        .btn-area button {
-            width: 100%;
-            padding: 12px;
-            background-color: #3498db;
-            color: white;
-            border: none;
-            border-radius: 8px;
-            font-size: 16px;
-            cursor: pointer;
-            transition: background 0.3s;
-        }
-        .btn-area button:hover {
-            background-color: #2980b9;
-        }
-        .hint {
-            text-align: center;
-            font-size: 15px;
-            color: #f39c12;
-            margin: 10px 0;
-            min-height: 20px;
-        }
-        .result {
-            text-align: center;
-            font-size: 16px;
-            margin: 10px 0;
-            min-height: 20px;
-        }
-        .correct {
-            color: #27ae60;
-        }
-        .wrong {
-            color: #e74c3c;
-        }
-        .finish-card {
-            text-align: center;
-            padding: 20px 0;
-        }
-        .finish-card h2 {
-            color: #3498db;
-            margin-bottom: 15px;
-        }
-        .finish-card p {
-            font-size: 18px;
-            margin-bottom: 20px;
-        }
-    </style>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>货品编码练习系统</title>
+<style>
+*{box-sizing:border-box;margin:0;padding:0;font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif}
+body{background:#f2f4f6;padding:15px;max-width:480px;margin:0 auto}
+.top-bar{display:flex;justify-content:space-between;align-items:center;margin-bottom:12px;font-size:14px;color:#333}
+.card{background:#fff;border-radius:20px;padding:25px 22px;box-shadow:0 6px 20px rgba(0,0,0,0.08);position:relative;margin-bottom:12px}
+.goods-box{text-align:center;margin:10px 0 25px}
+.goods-label{font-size:14px;color:#666;margin-bottom:6px}
+.goods-no{font-size:24px;font-weight:700;color:#111;letter-spacing:1px}
+.group{margin-bottom:20px}
+.label{font-size:14px;color:#666;margin-bottom:8px;padding-left:4px}
+.btn-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}
+.btn{padding:13px 6px;border:1px solid #e1e4e8;border-radius:12px;background:#fff;font-size:15px;color:#333;cursor:pointer;transition:all 0.2s}
+.btn:hover{border-color:#c0c4cc}
+.btn.correct{background:#00c48c;color:#fff;border-color:#00c48c}
+.btn.wrong{background:#ff4d4f;color:#fff;border-color:#ff4d4f}
+.btn:disabled{opacity:0.7}
+
+.nav{display:flex;gap:8px;margin-bottom:12px}
+.nav button{flex:1;padding:12px;border-radius:12px;border:none;background:#fff;color:#333}
+
+.tools{display:flex;gap:8px;margin-bottom:12px}
+.tools button{flex:1;padding:10px;border-radius:12px;border:none;background:#fff;color:#333;font-size:14px}
+
+.score-box{display:flex;gap:10px;margin-bottom:12px}
+.score-item{flex:1;background:#f7f8fa;padding:10px;border-radius:12px;text-align:center}
+.score-item .num{font-size:18px;font-weight:700;color:#333}
+.score-item .text{font-size:12px;color:#999;margin-top:2px}
+
+.feedback{position:fixed;top:50%;left:50%;transform:translate(-50%,-50%);background:rgba(0,0,0,0.75);color:#fff;padding:12px 24px;border-radius:12px;font-size:16px;display:none;z-index:99}
+.wrong-box{display:none;background:#fff;border-radius:20px;padding:20px;box-shadow:0 6px 20px rgba(0,0,0,0.08)}
+.wrong-box h4{margin-bottom:10px;font-size:16px}
+.wrong-item{padding:10px;border-bottom:1px solid #eee;font-size:14px}
+.wrong-item:last-child{border-bottom:none}
+</style>
 </head>
 <body>
-    <div class="card-container" id="main-container">
-        <div class="card-header">
-            <h1>颜色助记卡片</h1>
-            <div class="progress" id="progress">第 1/49 个颜色</div>
-        </div>
-        <div class="word-card">
-            <div class="english" id="word-english"></div>
-            <div class="meaning" id="word-meaning"></div>
-        </div>
-        <div class="hint" id="hint-text"></div>
-        <div class="result" id="result-text"></div>
-        <div class="input-area">
-            <input type="text" id="answer-input" placeholder="请输入单词的中文释义">
-        </div>
-        <div class="btn-area">
-            <button onclick="checkAnswer()">提交答案</button>
-        </div>
-    </div>
 
-    <script>
-        // 替换后的颜色编码库（共49个）
-        const wordList = [
-            { en: "A1", cn: "黑色" },
-            { en: "A4", cn: "黑白花" },
-            { en: "A6", cn: "黑底花" },
-            { en: "B2", cn: "牛仔蓝" },
-            { en: "B4", cn: "王冠蓝" },
-            { en: "BC", cn: "道奇蓝" },
-            { en: "C1", cn: "白色" },
-            { en: "D1", cn: "咖啡色" },
-            { en: "D6", cn: "乌木棕" },
-            { en: "D8", cn: "咖色花" },
-            { en: "D9", cn: "松球色" },
-            { en: "DA", cn: "麦麸棕" },
-            { en: "DB", cn: "深橡木色" },
-            { en: "E3", cn: "雨雾灰" },
-            { en: "E4", cn: "熔岩灰" },
-            { en: "E5", cn: "黎明灰" },
-            { en: "E6", cn: "安静灰" },
-            { en: "F2", cn: "坚果壳棕" },
-            { en: "F5", cn: "吐司色" },
-            { en: "FA", cn: "榛子色" },
-            { en: "G0", cn: "清澈绿" },
-            { en: "G3", cn: "茶棕色" },
-            { en: "G7", cn: "豆蔻绿" },
-            { en: "G9", cn: "绿底花" },
-            { en: "GA", cn: "苔藓绿" },
-            { en: "GD", cn: "海松绿" },
-            { en: "GE", cn: "罗勒绿" },
-            { en: "GH", cn: "水雾绿" },
-            { en: "GK", cn: "果冻豆绿" },
-            { en: "H1", cn: "爱尔兰奶油" },
-            { en: "H2", cn: "开心果色" },
-            { en: "H6", cn: "云米色" },
-            { en: "I1", cn: "红色" },
-            { en: "I2", cn: "番茄红" },
-            { en: "I3", cn: "安可拉红" },
-            { en: "I7", cn: "火焰红" },
-            { en: "I8", cn: "梅洛红" },
-            { en: "I9", cn: "火炉红" },
-            { en: "IA", cn: "朗姆酒红" },
-            { en: "IB", cn: "无花果色" },
-            { en: "ID", cn: "暮光红" },
-            { en: "J1", cn: "黄色" },
-            { en: "J5", cn: "太阳能黄" },
-            { en: "K4", cn: "葡萄汁" },
-            { en: "LB", cn: "古金橙" },
-            { en: "N1", cn: "柔雾粉" },
-            { en: "N8", cn: "嫩桃色" },
-            { en: "NB", cn: "棱镜粉" },
-            { en: "Q7", cn: "棋盘格" },
-            { en: "Q8", cn: "条纹格" }
-        ];
+<div class="top-bar">
+  <div>⏱ 用时：<span id="time">00:00</span></div>
+  <div>🎯 正确率：<span id="rate">0%</span></div>
+</div>
 
-        // 初始化变量
-        let shuffledWords = [...wordList].sort(() => Math.random() - 0.5); // 随机打乱顺序
-        let currentIndex = 0; // 当前编码索引
-        let wrongAttempts = 0; // 错误尝试次数
-        let correctCount = 0; // 正确答题数
+<div class="score-box">
+  <div class="score-item"><div class="num" id="score">0</div><div class="text">总分</div></div>
+  <div class="score-item"><div class="num" id="totalQ">0</div><div class="text">答题数</div></div>
+</div>
 
-        // 显示当前编码
-        function showCurrentWord() {
-            if (currentIndex >= shuffledWords.length) {
-                // 所有编码完成
-                showFinishPage();
-                return;
-            }
-            const currentWord = shuffledWords[currentIndex];
-            document.getElementById("word-english").textContent = currentWord.en;
-            document.getElementById("word-meaning").textContent = ""; // 清空释义
-            document.getElementById("hint-text").textContent = ""; // 清空提示
-            document.getElementById("result-text").textContent = ""; // 清空结果
-            document.getElementById("answer-input").value = ""; // 清空输入框
-            document.getElementById("progress").textContent = `第 ${currentIndex + 1}/${shuffledWords.length} 个颜色`;
-            wrongAttempts = 0; // 重置错误次数
-        }
+<div class="nav">
+  <button id="prev">⬅️ 上一题</button>
+  <button id="skip">⏭️ 跳过此题</button>
+  <button id="next" style="display:none">✅ 下一题</button>
+</div>
 
-        // 检查答案
-        function checkAnswer() {
-            const inputAnswer = document.getElementById("answer-input").value.trim();
-            const currentWord = shuffledWords[currentIndex];
-            const resultText = document.getElementById("result-text");
-            const meaningText = document.getElementById("word-meaning");
-            const hintText = document.getElementById("hint-text");
+<div class="tools">
+  <button id="showWrong">📋 错题本</button>
+  <button id="exportScore">📤 导出成绩</button>
+</div>
 
-            // 空输入判断
-            if (!inputAnswer) {
-                resultText.textContent = "请输入对应的颜色名称！";
-                resultText.className = "result wrong";
-                return;
-            }
+<div class="card">
+  <div class="goods-box">
+    <div class="goods-label">当前货号</div>
+    <div class="goods-no" id="goodsNo"></div>
+  </div>
 
-            // 答案正确
-            if (inputAnswer === currentWord.cn) {
-                resultText.textContent = "✅ 回答正确！";
-                resultText.className = "result correct";
-                meaningText.textContent = `释义：${currentWord.cn}`;
-                correctCount++;
-                // 1.2秒后切换下一个编码
-                setTimeout(() => {
-                    currentIndex++;
-                    showCurrentWord();
-                }, 1200);
-            } else {
-                wrongAttempts++;
-                // 第一次答错，给出提示
-                if (wrongAttempts === 1) {
-                    resultText.textContent = "❌ 回答错误，再试一次！";
-                    resultText.className = "result wrong";
-                    // 提示：显示颜色名称的前1-2个字
-                    const hint = currentWord.cn.slice(0, 2) + "……";
-                    hintText.textContent = `💡 提示：${hint}`;
-                } else {
-                    // 第二次答错，显示正确答案并切换下一个
-                    resultText.textContent = "❌ 再次答错！";
-                    resultText.className = "result wrong";
-                    meaningText.textContent = `正确名称：${currentWord.cn}`;
-                    // 1.2秒后切换下一个编码
-                    setTimeout(() => {
-                        currentIndex++;
-                        showCurrentWord();
-                    }, 1200);
-                }
-            }
-        }
+  <div class="group">
+    <div class="label">色号</div>
+    <div class="btn-grid" id="cnGroup"></div>
+  </div>
+  <div class="group">
+    <div class="label">颜色</div>
+    <div class="btn-grid" id="colorGroup"></div>
+  </div>
+  <div class="group">
+    <div class="label">类别</div>
+    <div class="btn-grid" id="catGroup"></div>
+  </div>
+  <div class="group">
+    <div class="label">吊牌价</div>
+    <div class="btn-grid" id="priceGroup"></div>
+  </div>
+</div>
 
-        // 显示完成页面
-        function showFinishPage() {
-            const container = document.getElementById("main-container");
-            container.innerHTML = `
-                <div class="finish-card">
-                    <h2>🎉 编码背诵完成！</h2>
-                    <p>本次共背诵 ${shuffledWords.length} 个编码</p>
-                    <p>答对 ${correctCount} 个，答错 ${shuffledWords.length - correctCount} 个</p>
-                    <button onclick="restartGame()">重新开始</button>
-                </div>
-            `;
-        }
+<div class="wrong-box" id="wrongBox">
+  <h4>📋 错题本</h4>
+  <div id="wrongList"></div>
+</div>
 
-        // 重新开始
-        function restartGame() {
-            shuffledWords = [...wordList].sort(() => Math.random() - 0.5);
-            currentIndex = 0;
-            correctCount = 0;
-            showCurrentWord();
-        }
+<div class="feedback" id="feedback"></div>
 
-        // 绑定回车键提交
-        document.getElementById("answer-input").addEventListener("keydown", function(e) {
-            if (e.key === "Enter") {
-                checkAnswer();
-            }
-        });
+<script>
+const colorData = [
+  {en:"SL003411",cn:"C1",color:"白色",category:"上衣",price:630},
+  {en:"SR109511",cn:"A1",color:"黑色",category:"上衣",price:890},
+  {en:"SR109511",cn:"I8",color:"梅洛红",category:"上衣",price:890},
+  {en:"SM01E2611",cn:"I2",color:"番茄红",category:"上衣",price:590},
+  {en:"SM351411",cn:"A1",color:"黑色",category:"上衣",price:750},
+  {en:"SM351411",cn:"G0",color:"清澈绿",category:"上衣",price:750},
+  {en:"SM366511",cn:"E6",color:"安静灰",category:"上衣",price:700},
+  {en:"SM367411",cn:"E3",color:"雨雾灰",category:"上衣",price:800},
+  {en:"SM370411",cn:"A1",color:"黑色",category:"上衣",price:600},
+  {en:"SM370411",cn:"E3",color:"雨雾灰",category:"上衣",price:600},
+  {en:"SM370411",cn:"H1",color:"爱尔兰奶油",category:"上衣",price:600},
+  {en:"SM383411",cn:"A1",color:"黑色",category:"上衣",price:700},
+  {en:"SM383411",cn:"E3",color:"雨雾灰",category:"上衣",price:700},
+  {en:"SM407411",cn:"A1",color:"黑色",category:"上衣",price:850},
+  {en:"SM407411",cn:"FA",color:"榛子色",category:"上衣",price:850},
+  {en:"SM407411",cn:"NB",color:"棱镜粉",category:"上衣",price:850},
+  {en:"SM7012611",cn:"B4",color:"王冠蓝",category:"上衣",price:690},
+  {en:"SM7012611",cn:"D6",color:"乌木棕",category:"上衣",price:690},
+  {en:"SM01A2611",cn:"I2",color:"番茄红",category:"上衣",price:750},
+  {en:"SM01A2611",cn:"IA",color:"朗姆酒红",category:"上衣",price:750},
+  {en:"SM01D2611",cn:"IA",color:"朗姆酒红",category:"上衣",price:650},
+  {en:"SM359411",cn:"NB",color:"棱镜粉",category:"上衣",price:800},
+  {en:"SM384411",cn:"A1",color:"黑色",category:"上衣",price:750},
+  {en:"SM384411",cn:"FA",color:"榛子色",category:"上衣",price:750},
+  {en:"SM388511",cn:"I8",color:"梅洛红",category:"上衣",price:750},
+  {en:"SM390411",cn:"A4",color:"黑白花",category:"上衣",price:880},
+  {en:"SM401411",cn:"FA",color:"榛子色",category:"上衣",price:830},
+  {en:"SM401411",cn:"H1",color:"爱尔兰奶油",category:"上衣",price:830},
+  {en:"SM401411",cn:"I9",color:"火炉红",category:"上衣",price:830},
+  {en:"SM406411",cn:"H1",color:"爱尔兰奶油",category:"上衣",price:800},
+  {en:"SM6252611",cn:"I2",color:"番茄红",category:"上衣",price:650},
+  {en:"SM7132611",cn:"B4",color:"王冠蓝",category:"上衣",price:790},
+  {en:"SM7132611",cn:"IB",color:"无花果色",category:"上衣",price:790},
+  {en:"SN390511",cn:"E6",color:"安静灰",category:"上衣",price:850},
+  {en:"SW113511",cn:"I8",color:"梅洛红",category:"上衣",price:800},
+  {en:"SW179511",cn:"I8",color:"梅洛红",category:"上衣",price:1100},
+  {en:"SQ159511",cn:"I8",color:"梅洛红",category:"裤子",price:690},
+  {en:"SX020511",cn:"A1",color:"黑色",category:"裤子",price:560},
+  {en:"SX020511",cn:"I8",color:"梅洛红",category:"裤子",price:560},
+  {en:"SX104411",cn:"I9",color:"火炉红",category:"裤子",price:650},
+  {en:"SY5912611",cn:"B2",color:"牛仔蓝",category:"裤子",price:650},
+  {en:"SZ462443",cn:"A1",color:"黑色",category:"羽绒服",price:1490},
+  {en:"SA300243",cn:"Q8",color:"条纹格",category:"羽绒服",price:3280},
+  {en:"SZ062442",cn:"A1",color:"黑色",category:"羽绒服",price:1890},
+  {en:"SP8542543",cn:"D6",color:"乌木棕",category:"羽绒服",price:1490},
+  {en:"SA287241",cn:"GD",color:"海松绿",category:"羽绒服",price:2580},
+  {en:"SA293241",cn:"GH",color:"水雾绿",category:"羽绒服",price:2150},
+  {en:"SA323341",cn:"C1",color:"白色",category:"羽绒服",price:2150},
+  {en:"SA323341",cn:"NB",color:"棱镜粉",category:"羽绒服",price:2150},
+  {en:"SA337341",cn:"FA",color:"榛子色",category:"羽绒服",price:2580},
+  {en:"SA337341",cn:"NB",color:"棱镜粉",category:"羽绒服",price:2580},
+  {en:"SA339341",cn:"FA",color:"榛子色",category:"羽绒服",price:2580},
+  {en:"SA345183",cn:"I1",color:"红色",category:"羽绒服",price:2150},
+  {en:"SA366191",cn:"F2",color:"坚果壳棕",category:"羽绒服",price:2580},
+  {en:"SA366191",cn:"I9",color:"火炉红",category:"羽绒服",price:2580},
+  {en:"SA381183",cn:"I1",color:"红色",category:"羽绒服",price:2150},
+  {en:"SA382191",cn:"H6",color:"云米色",category:"羽绒服",price:2040},
+  {en:"SA393183",cn:"Q7",color:"棋盘格",category:"羽绒服",price:2370},
+  {en:"SA411441",cn:"N1",color:"柔雾粉",category:"羽绒服",price:1990},
+  {en:"SA423441",cn:"D9",color:"松球色",category:"羽绒服",price:2300},
+  {en:"SA427441",cn:"D9",color:"松球色",category:"羽绒服",price:2200},
+  {en:"SA427441",cn:"E4",color:"熔岩灰",category:"羽绒服",price:2200},
+  {en:"SA427441",cn:"F2",color:"坚果壳棕",category:"羽绒服",price:2200},
+  {en:"SA432441",cn:"E4",color:"熔岩灰",category:"羽绒服",price:1590},
+  {en:"SA432441",cn:"H1",color:"爱尔兰奶油",category:"羽绒服",price:1590},
+  {en:"SA436442",cn:"D9",color:"松球色",category:"羽绒服",price:2790},
+  {en:"SA467441",cn:"GE",color:"罗勒绿",category:"羽绒服",price:2100},
+  {en:"SA7782541",cn:"B4",color:"王冠蓝",category:"羽绒服",price:1390},
+  {en:"SA7782541",cn:"D6",color:"乌木棕",category:"羽绒服",price:1390},
+  {en:"SA8322542",cn:"GA",color:"苔藓绿",category:"羽绒服",price:2590},
+  {en:"SZ001343",cn:"A1",color:"黑色",category:"羽绒服",price:2050},
+  {en:"SZ001441",cn:"A1",color:"黑色",category:"羽绒服",price:1590},
+  {en:"SZ001441",cn:"G7",color:"豆蔻绿",category:"羽绒服",price:1590},
+  {en:"SZ001441",cn:"H1",color:"爱尔兰奶油",category:"羽绒服",price:1590},
+  {en:"SZ005192",cn:"A1",color:"黑色",category:"羽绒服",price:1720},
+  {en:"SZ005192",cn:"ID",color:"暮光红",category:"羽绒服",price:1720},
+  {en:"SZ005342",cn:"A1",color:"黑色",category:"羽绒服",price:1630},
+  {en:"SZ005342",cn:"GK",color:"果冻豆绿",category:"羽绒服",price:1630},
+  {en:"SZ006192",cn:"DA",color:"麦麸棕",category:"羽绒服",price:1930},
+  {en:"SZ0192543",cn:"I7",color:"火焰红",category:"羽绒服",price:1590},
+  {en:"SZ0202542",cn:"A1",color:"黑色",category:"羽绒服",price:1690},
+  {en:"SZ0202542",cn:"E3",color:"雨雾灰",category:"羽绒服",price:1690},
+  {en:"SZ0222541",cn:"N1",color:"柔雾粉",category:"羽绒服",price:1290},
+  {en:"SZ033242",cn:"A1",color:"黑色",category:"羽绒服",price:1750},
+  {en:"SZ072342",cn:"A1",color:"黑色",category:"羽绒服",price:1500},
+  {en:"SZ101191",cn:"BC",color:"道奇蓝",category:"羽绒服",price:1290},
+  {en:"SZ101191",cn:"ID",color:"暮光红",category:"羽绒服",price:1290},
+  {en:"SZ1032541",cn:"B4",color:"王冠蓝",category:"羽绒服",price:1390},
+  {en:"SZ1032541",cn:"D6",color:"乌木棕",category:"羽绒服",price:1390},
+  {en:"SZ1182542",cn:"E3",color:"雨雾灰",category:"羽绒服",price:2260},
+  {en:"SZ235341",cn:"G3",color:"茶棕色",category:"羽绒服",price:1500},
+  {en:"SZ235341",cn:"H1",color:"爱尔兰奶油",category:"羽绒服",price:1500},
+  {en:"SZ237342",cn:"F5",color:"吐司色",category:"羽绒服",price:1780},
+  {en:"SZ3102543",cn:"I7",color:"火焰红",category:"羽绒服",price:2100},
+  {en:"SZ361341",cn:"H1",color:"爱尔兰奶油",category:"羽绒服",price:1350},
+  {en:"SZ428192",cn:"BC",color:"道奇蓝",category:"羽绒服",price:1830},
+  {en:"SZ459442",cn:"GE",color:"罗勒绿",category:"羽绒服",price:1790},
+  {en:"SZ7942542",cn:"A1",color:"黑色",category:"羽绒服",price:1990},
+  {en:"SZ8112541",cn:"A1",color:"黑色",category:"羽绒服",price:1450},
+  {en:"SZ8112541",cn:"E3",color:"雨雾灰",category:"羽绒服",price:1450},
+  {en:"SZ8112541",cn:"IB",color:"无花果色",category:"羽绒服",price:1450},
+  {en:"SZ8132542",cn:"A1",color:"黑色",category:"羽绒服",price:1690},
+  {en:"SZ8132542",cn:"IB",color:"无花果色",category:"羽绒服",price:1690},
+  {en:"SZ8362542",cn:"E3",color:"雨雾灰",category:"羽绒服",price:1850},
+  {en:"SZ8582542",cn:"A1",color:"黑色",category:"羽绒服",price:1500},
+  {en:"SZ8582542",cn:"D6",color:"乌木棕",category:"羽绒服",price:1500},
+  {en:"SL016183",cn:"A1",color:"黑色",category:"上衣",price:750},
+  {en:"SH011341",cn:"H1",color:"爱尔兰奶油",category:"上衣",price:600},
+  {en:"SH103441",cn:"E4",color:"熔岩灰",category:"上衣",price:590},
+  {en:"SK147183",cn:"A1",color:"黑色",category:"上衣",price:1180},
+  {en:"SK237241",cn:"A1",color:"黑色",category:"上衣",price:1050},
+  {en:"SM286183",cn:"J1",color:"黄色",category:"上衣",price:530},
+  {en:"SM351441",cn:"E4",color:"熔岩灰",category:"上衣",price:1190},
+  {en:"SM355441",cn:"I3",color:"安可拉红",category:"上衣",price:760},
+  {en:"SM360441",cn:"G7",color:"豆蔻绿",category:"上衣",price:850},
+  {en:"SM375441",cn:"E4",color:"熔岩灰",category:"上衣",price:550},
+  {en:"SM375441",cn:"N1",color:"柔雾粉",category:"上衣",price:550},
+  {en:"SM376441",cn:"I3",color:"安可拉红",category:"上衣",price:800},
+  {en:"SM393441",cn:"G7",color:"豆蔻绿",category:"上衣",price:760},
+  {en:"SM393441",cn:"LB",color:"古金橙",category:"上衣",price:760},
+  {en:"SM397441",cn:"A1",color:"黑色",category:"上衣",price:500},
+  {en:"SM397441",cn:"D9",color:"松球色",category:"上衣",price:500},
+  {en:"SM397441",cn:"N1",color:"柔雾粉",category:"上衣",price:500},
+  {en:"SM6322541",cn:"B4",color:"王冠蓝",category:"上衣",price:650},
+  {en:"SM6322541",cn:"GA",color:"苔藓绿",category:"上衣",price:650},
+  {en:"SM6482542",cn:"I7",color:"火焰红",category:"上衣",price:790},
+  {en:"SM6812541",cn:"B4",color:"王冠蓝",category:"上衣",price:790},
+  {en:"SM7262541",cn:"GA",color:"苔藓绿",category:"上衣",price:650},
+  {en:"SM7262541",cn:"H2",color:"开心果色",category:"上衣",price:650},
+  {en:"SM365441",cn:"E4",color:"熔岩灰",category:"上衣",price:990},
+  {en:"SM6702541",cn:"E4",color:"熔岩灰",category:"上衣",price:750},
+  {en:"SJ102441",cn:"C1",color:"白色",category:"上衣",price:500},
+  {en:"SQ001183",cn:"A1",color:"黑色",category:"裤子",price:590},
+  {en:"SQ001183",cn:"D1",color:"咖啡色",category:"裤子",price:590},
+  {en:"SQ0272541",cn:"D6",color:"乌木棕",category:"裤子",price:600},
+  {en:"SQ02G2541",cn:"E4",color:"熔岩灰",category:"裤子",price:790},
+  {en:"SQ136241",cn:"DB",color:"深橡木色",category:"裤子",price:800},
+  {en:"SX064183",cn:"D1",color:"咖啡色",category:"裤子",price:460},
+  {en:"SX022191",cn:"A1",color:"黑色",category:"裤子",price:640},
+  {en:"SX022191",cn:"D1",color:"咖啡色",category:"裤子",price:640},
+  {en:"SX025183",cn:"A1",color:"黑色",category:"裤子",price:530},
+  {en:"SX027241",cn:"H6",color:"云米色",category:"裤子",price:530},
+  {en:"SX02F2542",cn:"E4",color:"熔岩灰",category:"裤子",price:650},
+  {en:"SX062183",cn:"B2",color:"牛仔蓝",category:"裤子",price:520},
+  {en:"SX118242",cn:"A1",color:"黑色",category:"裤子",price:650},
+  {en:"SX122241",cn:"H6",color:"云米色",category:"裤子",price:650},
+  {en:"SX169341",cn:"H1",color:"爱尔兰奶油",category:"裤子",price:550},
+  {en:"SX277442",cn:"D9",color:"松球色",category:"裤子",price:590},
+  {en:"SX5382541",cn:"D6",color:"乌木棕",category:"裤子",price:690},
+  {en:"SX5382541",cn:"E4",color:"熔岩灰",category:"裤子",price:690},
+  {en:"SX5382541",cn:"H2",color:"开心果色",category:"裤子",price:690},
+  {en:"SY292441",cn:"B2",color:"牛仔蓝",category:"裤子",price:600},
+  {en:"SY1312541",cn:"B2",color:"牛仔蓝",category:"裤子",price:600},
+  {en:"SY5052541",cn:"B2",color:"牛仔蓝",category:"裤子",price:690},
+  {en:"SL156533",cn:"K4",color:"葡萄汁",category:"上衣",price:550},
+  {en:"SH083433",cn:"A6",color:"黑底花",category:"上衣",price:550},
+  {en:"SH111433",cn:"A1",color:"黑色",category:"上衣",price:980},
+  {en:"SH156435",cn:"D8",color:"咖色花",category:"上衣",price:650},
+  {en:"SH207433",cn:"G9",color:"绿底花",category:"上衣",price:550},
+  {en:"SK007433",cn:"A1",color:"黑色",category:"上衣",price:1180},
+  {en:"SM363433",cn:"G7",color:"豆蔻绿",category:"上衣",price:750},
+  {en:"SM367433",cn:"A1",color:"黑色",category:"上衣",price:550},
+  {en:"SM367433",cn:"D6",color:"乌木棕",category:"上衣",price:550},
+  {en:"SM367433",cn:"E5",color:"黎明灰",category:"上衣",price:550},
+  {en:"SM367433",cn:"G7",color:"豆蔻绿",category:"上衣",price:550},
+  {en:"SM367433",cn:"H1",color:"爱尔兰奶油",category:"上衣",price:550},
+  {en:"SM367532",cn:"H1",color:"爱尔兰奶油",category:"上衣",price:750},
+  {en:"SM367532",cn:"J5",color:"太阳能黄",category:"上衣",price:750},
+  {en:"SM383432",cn:"A1",color:"黑色",category:"上衣",price:550},
+  {en:"SM384432",cn:"A1",color:"黑色",category:"上衣",price:600},
+  {en:"SM384432",cn:"E5",color:"黎明灰",category:"上衣",price:600},
+  {en:"SM390532",cn:"B4",color:"王冠蓝",category:"上衣",price:560},
+  {en:"SM390532",cn:"E4",color:"熔岩灰",category:"上衣",price:560},
+  {en:"SM398433",cn:"A1",color:"黑色",category:"上衣",price:750},
+  {en:"SM398433",cn:"H1",color:"爱尔兰奶油",category:"上衣",price:750},
+  {en:"SM354432",cn:"E5",color:"黎明灰",category:"上衣",price:800},
+  {en:"SM392432",cn:"N8",color:"嫩桃色",category:"上衣",price:800},
+  {en:"SM358432",cn:"A1",color:"黑色",category:"上衣",price:600},
+  {en:"SM358432",cn:"D6",color:"乌木棕",category:"上衣",price:600},
+  {en:"SC189533",cn:"B4",color:"王冠蓝",category:"上衣",price:900},
+  {en:"SC189533",cn:"GA",color:"苔藓绿",category:"上衣",price:900},
+  {en:"SC193533",cn:"GA",color:"苔藓绿",category:"上衣",price:960},
+  {en:"SC204434",cn:"A1",color:"黑色",category:"上衣",price:1080},
+  {en:"SC204434",cn:"H1",color:"爱尔兰奶油",category:"上衣",price:1080},
+  {en:"SC216434",cn:"A1",color:"黑色",category:"上衣",price:1080},
+  {en:"SA422435",cn:"A1",color:"黑色",category:"上衣",price:1400},
+  {en:"SA422435",cn:"C1",color:"白色",category:"上衣",price:1400},
+  {en:"SA422435",cn:"I1",color:"红色",category:"上衣",price:1400},
+  {en:"SN154435",cn:"D6",color:"乌木棕",category:"上衣",price:1030},
+  {en:"SN206434",cn:"G7",color:"豆蔻绿",category:"上衣",price:750},
+  {en:"SW009533",cn:"A1",color:"黑色",category:"上衣",price:990},
+  {en:"SW009533",cn:"D6",color:"乌木棕",category:"上衣",price:990},
+  {en:"SW020433",cn:"A1",color:"黑色",category:"上衣",price:930},
+  {en:"SW060434",cn:"E5",color:"黎明灰",category:"上衣",price:1080},
+  {en:"SW104433",cn:"A1",color:"黑色",category:"上衣",price:980},
+  {en:"SW104433",cn:"C1",color:"白色",category:"上衣",price:980},
+  {en:"SW170533",cn:"B2",color:"牛仔蓝",category:"上衣",price:860},
+  {en:"SW171533",cn:"D6",color:"乌木棕",category:"上衣",price:890},
+  {en:"SW176435",cn:"D6",color:"乌木棕",category:"上衣",price:850},
+  {en:"SW209433",cn:"A1",color:"黑色",category:"上衣",price:850},
+  {en:"SJ106433",cn:"A1",color:"黑色",category:"上衣",price:550},
+  {en:"SZ003533",cn:"A1",color:"黑色",category:"上衣",price:1190},
+  {en:"SZ003533",cn:"D6",color:"乌木棕",category:"上衣",price:1190},
+  {en:"SZ178435",cn:"A1",color:"黑色",category:"上衣",price:1250},
+  {en:"SZ178435",cn:"H1",color:"爱尔兰奶油",category:"上衣",price:1250},
+  {en:"SK391433",cn:"A1",color:"黑色",category:"上衣",price:700},
+  {en:"SM372433",cn:"A1",color:"黑色",category:"上衣",price:650},
+  {en:"SQ113434",cn:"A1",color:"黑色",category:"裤子",price:600},
+  {en:"SX253434",cn:"A1",color:"黑色",category:"裤子",price:650},
+  {en:"SX253434",cn:"D6",color:"乌木棕",category:"裤子",price:650},
+  {en:"SX253434",cn:"E5",color:"黎明灰",category:"裤子",price:650},
+  {en:"SX253434",cn:"H1",color:"爱尔兰奶油",category:"裤子",price:650},
+  {en:"SX260434",cn:"A1",color:"黑色",category:"裤子",price:550},
+  {en:"SX279434",cn:"A1",color:"黑色",category:"裤子",price:750},
+  {en:"SX280533",cn:"B4",color:"王冠蓝",category:"裤子",price:680},
+  {en:"SX280533",cn:"D6",color:"乌木棕",category:"裤子",price:680},
+  {en:"SX280533",cn:"E4",color:"熔岩灰",category:"裤子",price:680},
+  {en:"SN155435",cn:"D6",color:"乌木棕",category:"裤子",price:750},
+  {en:"SN255434",cn:"G7",color:"豆蔻绿",category:"裤子",price:700}
+];
 
-        // 初始化显示第一个编码
-        showCurrentWord();
-    </script>
+// 全局状态
+let history = [];
+let histIndex = -1;
+let current = null;
+
+let correct = { cn: false, color: false, cat: false, price: false };
+let score = 0;
+let total = 0;
+let startTime = Date.now();
+let wrongList = [];
+
+const $ = id => document.getElementById(id);
+const qs = (sel, p) => (p || document).querySelectorAll(sel);
+
+// 工具
+function shuffle(arr) { return [...arr].sort(() => Math.random() - 0.5); }
+function getOther(prop, cnt) {
+  const s = new Set();
+  while (s.size < cnt) {
+    const item = colorData[Math.floor(Math.random() * colorData.length)];
+    if (item[prop] !== current[prop]) s.add(item[prop]);
+  }
+  return [...s];
+}
+function formatTime(ms) {
+  const s = Math.floor(ms / 1000);
+  const m = String(Math.floor(s / 60)).padStart(2, '0');
+  const sec = String(s % 60).padStart(2, '0');
+  return `${m}:${sec}`;
+}
+function showFeedback(text) {
+  const el = $("feedback");
+  el.textContent = text;
+  el.style.display = "block";
+  setTimeout(() => el.style.display = "none", 800);
+}
+
+// 统计
+function renderStats() {
+  $("score").textContent = score;
+  $("totalQ").textContent = total;
+  const rate = total ? Math.round(score / total * 100) : 0;
+  $("rate").textContent = rate + "%";
+  $("time").textContent = formatTime(Date.now() - startTime);
+}
+
+// 渲染一组选项
+function renderGroup(elId, key, ans) {
+  const el = $(elId);
+  el.innerHTML = "";
+  const opts = shuffle([ans, ...getOther(key, 2)]);
+  opts.forEach(v => {
+    const b = document.createElement("button");
+    b.className = "btn";
+    b.textContent = v;
+    b.onclick = () => pick(key, v);
+    el.appendChild(b);
+  });
+}
+
+// 加载当前题目
+function loadQuestion(q) {
+  current = q;
+  correct = { cn: false, color: false, cat: false, price: false };
+  $("goodsNo").textContent = current.en;
+  renderGroup("cnGroup", "cn", current.cn);
+  renderGroup("colorGroup", "color", current.color);
+  renderGroup("catGroup", "cat", current.category);
+  renderGroup("priceGroup", "price", current.price);
+  $("next").style.display = "none";
+}
+
+// 选择答案（核心：错了不锁组，可重选）
+function pick(key, val) {
+  const btns = $(`${key}Group`).querySelectorAll(".btn");
+  btns.forEach(b => b.classList.remove("correct", "wrong"));
+
+  if (val === current[key]) {
+    correct[key] = true;
+    btns.forEach(b => {
+      if (b.textContent == val) b.classList.add("correct");
+    });
+    showFeedback("✅ 正确");
+  } else {
+    btns.forEach(b => {
+      if (b.textContent == val) b.classList.add("wrong");
+    });
+    showFeedback("❌ 再试试");
+    const exist = wrongList.some(x => x.en == current.en);
+    if (!exist) wrongList.push(current);
+  }
+
+  if (correct.cn && correct.color && correct.cat && correct.price) {
+    score++;
+    total++;
+    renderStats();
+    $("next").style.display = "block";
+  }
+}
+
+// 新题目
+function newQuestion() {
+  const q = colorData[Math.floor(Math.random() * colorData.length)];
+  history = history.slice(0, histIndex + 1);
+  history.push(q);
+  histIndex++;
+  loadQuestion(q);
+}
+
+// 上一题
+$("prev").onclick = () => {
+  if (histIndex <= 0) return showFeedback("🔙 已经是第一题");
+  histIndex--;
+  loadQuestion(history[histIndex]);
+};
+
+// 跳过
+$("skip").onclick = () => {
+  total++;
+  renderStats();
+  newQuestion();
+};
+
+// 下一题
+$("next").onclick = newQuestion;
+
+// 错题本
+$("showWrong").onclick = () => {
+  const box = $("wrongBox");
+  if (box.style.display == "block") { box.style.display = "none"; return; }
+  box.style.display = "block";
+  if (wrongList.length === 0) {
+    $("wrongList").innerHTML = "<div class='wrong-item'>暂无错题</div>";
+    return;
+  }
+  $("wrongList").innerHTML = wrongList.map((w,i)=>`
+    <div class='wrong-item'>${i+1}. ${w.en} | ${w.cn} | ${w.color} | ${w.category} | ${w.price}元</div>
+  `).join('');
+};
+
+// 导出
+$("exportScore").onclick = () => {
+  const content = [
+    ["货品练习成绩"],
+    ["导出时间", new Date().toLocaleString()],
+    ["总答题", total], ["正确", score],
+    ["正确率", (total ? Math.round(score/total*100) : 0)+"%"],
+    [],["货号","色号","颜色","类别","吊牌价"],
+    ...wrongList.map(w=>[w.en,w.cn,w.color,w.category,w.price])
+  ].map(r=>r.join(',')).join('\n');
+  const blob = new Blob([content], { type: "text/csv;charset=utf-8" });
+  const a = document.createElement("a");
+  a.href = URL.createObjectURL(blob);
+  a.download = "货品练习成绩.csv";
+  a.click();
+  showFeedback("📤 导出成功");
+};
+
+// 开始
+newQuestion();
+renderStats();
+setInterval(renderStats, 1000);
+</script>
 </body>
 </html>
+
